@@ -2,6 +2,9 @@
 
 Unlock intelligent, transparent, and actionable hiring decisions using the Gemini LLM. This application semantically matches a candidate's resume against a job description, providing not just a score, but a full explanation of *why*.
 
+* **Live Demo Video (YouTube):** https://youtu.be/u7qs6oL8x8w?si=hAS69wOis0GOvX9k
+* **GitHub Repository (Codebase):** https://github.com/Shireenaliza/SmartHirePy
+  
 ## Features
 
 This tool goes beyond keyword matching to provide a comprehensive analysis:
@@ -57,3 +60,15 @@ Execute the Streamlit command to launch the application:
 
 ```bash
 streamlit run app.py
+```
+
+
+## Technology Stack
+
+* **Core Logic:** Python
+* **AI/LLM:** Google Gemini (via `google-genai`)
+* **Frontend/UI:** Streamlit
+* **Data Validation:** Pydantic
+* **Visualization:** Altair (for the dynamic gauges and feature importance charts)
+
+
