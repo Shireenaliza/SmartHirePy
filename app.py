@@ -14,7 +14,7 @@ import altair as alt
 load_dotenv()
 st.set_page_config(
     page_title="Smart Hire Resume Screener",
-    layout="wide", # Use wide layout for a modern look
+    layout="wide", 
     initial_sidebar_state="expanded" 
 )
 
@@ -29,7 +29,7 @@ except Exception as e:
     st.error(f"Error initializing Gemini client: {e}")
     st.stop()
 
-# --- Pydantic Schemas (Unchanged) ---
+# --- Pydantic Schemas ---
 class ExtractedResumeData(BaseModel):
     name: str = Field(description="Full name of the candidate.")
     skills: List[str] = Field(description="A comprehensive list of up to 20 technical and soft skills.")
@@ -52,7 +52,7 @@ class XAIResult(BaseModel):
     feature_importance: List[FeatureImportance]
     counterfactual_suggestions: List[ResumeSuggestion]
 
-# --- Helper Functions (Unchanged) ---
+# --- Helper Functions ---
 
 def extract_text_from_pdf(uploaded_file):
     try:
@@ -63,7 +63,7 @@ def extract_text_from_pdf(uploaded_file):
         st.error(f"Error reading PDF file: {e}")
         return None
 
-# LLM Functions (Unchanged - using @st.cache_data for performance)
+# LLM Functions 
 @st.cache_data(show_spinner="Extracting structured resume data...")
 def extract_data_llm(resume_text: str) -> ExtractedResumeData:
     prompt = f"Extract the key data points from the following raw resume text and format as JSON according to the Pydantic schema. RESUME TEXT:\n---\n{resume_text}"
@@ -110,19 +110,19 @@ def analyze_and_explain_llm(extracted_data: ExtractedResumeData, job_description
     
     return XAIResult.model_validate_json(response.text)
 
-# --- FIXED: Visualization Functions ---
+# --- Visualization Functions ---
 
 def radial_gauge_chart(score: int):
     """Generates a radial gauge chart for the match score using Altair (Arc only), 
     with the legend suppressed for a minimalist look."""
     
-    # 1. Prepare data for the arc segments
+    # Prepare data for the arc segments
     score_df = pd.DataFrame([
         {'category': 'Score', 'value': score, 'order': 1},
         {'category': 'Remaining', 'value': 10 - score, 'order': 2}
     ])
 
-    # 2. Define the base chart and encoding (theta for pie/arc charts)
+    # Define the base chart and encoding (theta for pie/arc charts)
     base = alt.Chart(score_df).encode(
         theta=alt.Theta("value", stack=True)
     ).properties(
@@ -130,12 +130,11 @@ def radial_gauge_chart(score: int):
         height=250
     )
 
-    # 3. Create the Arc chart (the gauge)
+    # Create the Arc chart (the gauge)
     chart = base.mark_arc(outerRadius=120, innerRadius=90).encode(
-        # FIX: Suppress the legend by setting legend=None
         color=alt.Color("category", 
                         scale=alt.Scale(domain=['Score', 'Remaining'], range=['#4CAF50', '#E0E0E0']),
-                        legend=None # <--- THIS LINE HIDES THE ICON/LEGEND
+                        legend=None 
                        ),
         order=alt.Order("order", sort="ascending"),
         tooltip=['category', 'value']
@@ -145,7 +144,7 @@ def radial_gauge_chart(score: int):
 
     st.altair_chart(chart, use_container_width=False)
     
-    # 4. Use custom Markdown with CSS for centered text overlay
+    # Use custom Markdown with CSS for centered text overlay
     st.markdown(
         f"<h1 style='text-align: center; color: #4CAF50; margin-top: -150px; margin-bottom: 120px; font-size: 50px;'>{score}/10</h1>",
         unsafe_allow_html=True
